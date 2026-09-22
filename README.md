@@ -36,6 +36,6 @@ bud_node *hyle_bud_form(const hyle_schema_desc_t *schema,
 
 ## Dependencies
 
-- `external/hyle` — Canonical data schemas
-- `external/bud` — HTML AST and WASM bridge
+- `external/libhyle` — Canonical data schemas
+- `external/libbud` — HTML AST and WASM bridge
 - `external/libqmap` — Option resolution

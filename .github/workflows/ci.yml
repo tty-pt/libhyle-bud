@@ -11,6 +11,7 @@ jobs:
     with:
       name: libhyle-bud
       deps: "libhyle,libbud,libqmap,libhyle-source"
+      deps_openbsd: "libqsys,libqmap,libhyle,libbud,libhyle-source,json-c"
       deps_deb: "libqsys,libqmap,libhyle,libbud,libhyle-source,libjson-c-dev"
       deps_apk: "libqsys,libqmap,libhyle,libbud,libhyle-source,json-c-dev"
       deps_rpm: "libqsys,libqmap,libhyle,libbud,libhyle-source,json-c-devel"

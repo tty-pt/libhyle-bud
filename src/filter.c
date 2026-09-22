@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <bud/bud_app.h>
 #include <hyle-bud/hyle-bud.h>
+#include <hyle/url.h>
 
 /* ── Shared multi-value selection helpers ─────────────────────── */
 
@@ -711,7 +712,7 @@ bud_node *hyle_bud_filter_group(
 
 		val_buf[0] = '\0';
 		if (current_qs) {
-			hyle_bud_query_param(current_qs, fname, val_buf, sizeof(val_buf));
+			hyle_qs_param(current_qs, fname, val_buf, sizeof(val_buf));
 		}
 
 		bud_node *node = hyle_bud_filter(desc, fname, val_buf, pv);

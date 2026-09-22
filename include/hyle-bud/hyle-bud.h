@@ -4,7 +4,7 @@
 #include <bud/bud.h>
 #include <bud/bud_jsx.h>
 #include <hyle/field.h>
-#include <hyle/picker.h>
+#include <hyle-source/picker.h>
 #include <hyle/schema.h>
 
 void hyle_bud_state_apply(
@@ -245,12 +245,6 @@ void hyle_bud_picker_slots(const hyle_bud_picker_desc_t *d,
  * the desc's current page; caller owns the buffer. */
 void hyle_bud_picker_rows(const hyle_bud_picker_desc_t *d,
         char *rows, size_t rows_sz);
-
-/*
- * Helper to split query-string into key-value pairs without modifying input
- */
-size_t hyle_bud_query_param(
-        const char *qs, const char *key, char *out, size_t out_sz);
 
 /*
  * Active picker scope discovery helper

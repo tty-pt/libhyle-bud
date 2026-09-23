@@ -1,7 +1,7 @@
 FOLDER := hyle-bud
 
 all := libhyle-bud
-LDLIBS-libhyle-bud := -lhyle -lbud -lqmap -ljson-c
+LDLIBS-libhyle-bud := -lhyle -lbud -lcorm -ljson-c
 LDLIBS-libhyle-bud-Linux := -Wl,--no-as-needed -lhyle-source -Wl,--as-needed
 LDLIBS-libhyle-bud-Darwin := -lhyle-source
 

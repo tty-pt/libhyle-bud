@@ -86,11 +86,11 @@ cc my_app.c $(pkg-config --cflags --libs hyle-bud)
 ```
 
 `hyle-bud.pc` carries the full dependency chain
-(`-lhyle-bud -lhyle -lbud -lqmap -ljson-c -lhyle-source`).
+(`-lhyle-bud -lhyle -lbud -lcorm -ljson-c -lhyle-source`).
 
 **Dependencies:** `external/libhyle` (schemas), `external/libbud` (HTML AST and
 bridge), `external/libhyle-source` (picker DTOs + option resolution),
-`external/libqmap`, and `json-c`.
+`external/libcorm`, and `json-c`.
 
 **WASM:** when a WASM module needs the bridge, include `hyle-bud-wasm.mk`
 (single ownership, L03) — it adds `filter.c`, `table.c`, `picker.c`, `form.c`,

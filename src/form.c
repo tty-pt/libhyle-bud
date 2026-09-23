@@ -116,7 +116,7 @@ bud_node *hyle_bud_form(
 		const char *label = hyle_bud_field_label(d->key, label_buf, sizeof(label_buf));
 		const char *val = "";
 
-		if (d->qm_type == BUD_QM_VSTR && vstr_val) {
+		if (d->qm_type == BUD_CM_VSTR && vstr_val) {
 			val = vstr_val;
 		} else if (record && d->size > 0 && d->type != HYLE_FIELD_DERIVED) {
 			val = (const char *)record + d->offset;
@@ -165,7 +165,7 @@ bud_node *hyle_bud_form(
 				d->key,
 				bool_val ? "checked" : NULL,
 				req_attr);
-		} else if (d->qm_type == BUD_QM_VSTR || strcmp(d->key, "format") == 0) {
+		} else if (d->qm_type == BUD_CM_VSTR || strcmp(d->key, "format") == 0) {
 			if (d->min_length > 0) {
 				ctl = bud_tpl(
 					"<textarea name='%s' class='font-mono w-full' minlength='%zu' %b>%node</textarea>",
@@ -281,7 +281,7 @@ bud_node *hyle_bud_form(
 					continue;
 
 				const char *val = "";
-				if (d->qm_type == BUD_QM_VSTR && vstr_val) {
+				if (d->qm_type == BUD_CM_VSTR && vstr_val) {
 					val = vstr_val;
 				} else if (record && d->size > 0 && d->type != HYLE_FIELD_DERIVED) {
 					val = (const char *)record + d->offset;

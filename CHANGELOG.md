@@ -1,0 +1,13 @@
+## 1.0.0
+
+- **First stable release** — the schema-driven UI bridge that renders Bud HTML components directly from Hyle canonical data schemas (`hyle_schema_desc_t`). The **only** library in the stack permitted to link both `hyle` and `bud`; every filter, form, picker, and table on the platform is built through it — natively for SSR and, via the WASM bridge, in the browser.
+- **Schema-driven filters**: `hyle_bud_filter` draws the exact control from a field descriptor (text search, boolean switch, single-reference dropdown, multi-reference facet picker, omnisearch); `hyle_bud_filter_scoped` adds an integer scope for repeated rows/tables/cards, `hyle_bud_filter_group` builds a whole filter bar, `hyle_bud_filter_from_schema` renders one field with caller-supplied static options.
+- **Declarative forms**: `hyle_bud_form` builds a complete HTML POST form from a schema — labels, typed inputs, HTML validation attributes, optional hidden CSRF token, submit/cancel — prefilled from a C record or empty.
+- **Omni-dropdown pickers**: `hyle_bud_picker_field`/`hyle_bud_action_picker`, fragment-route slots via `hyle_bud_picker_slots`/`hyle_bud_picker_rows` (infinite-scroll option chunks), active-picker discovery via `hyle_bud_pick_find_active_scope`/`_picker_view_collect_*`. Degrades to plain HTML forms with JavaScript off.
+- **Tables & row actions**: `hyle_bud_table`/`_header`/`_body` render sortable listing tables; `hyle_bud_table_actions` uses a stretched overlay (`LINK` opens `/module/{id}`, `SUBMIT` posts via the HTML5 `form=` attribute — No-JS friendly); `hyle_bud_pagination` renders paging controls.
+- **WASM state hydration**: `hyle_bud_state_apply`/`_len` unpack server-rendered `bud-state` JSON into C state structs with zero-copy stride layouts; `hyle_bud_state_overlay_from_desc`/`_overlay_array` serialize back; `hyle_bud_picker_state_from_json`/`_to_json` carry picker state across the wire.
+- **i18n**: `hyle_bud_set_translator` installs a `const char *(*)(const char *)` callback; `hyle_bud_tr` routes every UI label through it.
+- **Widgets**: `hyle_bud_text_input`, `hyle_bud_filter_field`, `hyle_bud_multiselect_field`, `hyle_bud_reference_select_dropdown`, `hyle_bud_ms_reset`.
+- **Picker DTOs**: re-exports `hyle_option_t`, `hyle_picker_desc_t`, `hyle_picker_entry_t`, `hyle_picker_view_t`, `hyle_picker_buffer_t` from `<hyle-source/picker.h>` as `hyle_bud_*` typedefs.
+- **WASM**: include `hyle-bud-wasm.mk` to add `filter.c`, `table.c`, `picker.c`, `form.c`, and `libhyle/src/url.c` to a WASM module's sources.
+- **Dependencies**: `libhyle`, `libbud`, `libhyle-source`, `libcorm`, `json-c`.

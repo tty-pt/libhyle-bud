@@ -4,18 +4,19 @@
 [![BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![Hyle × Bud bridge](https://img.shields.io/badge/bridge-hyle%E2%80%94bud-8B5CF6)](#)
 
+> Schema-driven Bud UI bridge for Hyle data.
+
 A schema-driven UI bridge that renders Bud HTML components directly from Hyle
 canonical data schemas (`hyle_schema_desc_t`). It is the **only** library in the
 stack permitted to link both `hyle` and `bud`, and it is the layer every filter,
 form, picker, and table on the platform is built through — natively for SSR and,
 via the WASM bridge, in the browser.
 
----
-
 ## Contents
 
 - [Features](#features)
-- [Build & install](#build--install)
+- [Install](#install)
+- [Build from source](#build-from-source)
 - [Quickstart](#quickstart)
 - [API overview](#api-overview)
 - [Consumers](#consumers)
@@ -70,12 +71,22 @@ by default).
 (libhyle-source); `hyle-bud.h` includes it and re-exports them as
 `hyle_bud_*` typedefs for compatibility.
 
-## Build & install
+## Install
+
+Prebuilt packages are distributed on tty.pt for Linux (APT / Alpine / Arch /
+Fedora-RHEL), macOS (Homebrew), Windows (winget / MSYS2), and OpenBSD.
+Follow the [installation instructions](
+https://github.com/tty-pt/ci/blob/main/docs/install.md) and use
+**libhyle-bud** as the package name.
+
+## Build from source
+
+The library builds with a plain `make` (the shared [`mk` include.mk](
+https://github.com/tty-pt/mk)):
 
 ```sh
-cd external/libhyle-bud
 make          # lib/libhyle-bud.so
-
+make test     # exercised end-to-end by the site suite (see Testing)
 sudo make install   # lib, headers, and hyle-bud.pc → $(PREFIX), default /usr/local
 ```
 
@@ -88,9 +99,8 @@ cc my_app.c $(pkg-config --cflags --libs hyle-bud)
 `hyle-bud.pc` carries the full dependency chain
 (`-lhyle-bud -lhyle -lbud -lcorm -ljson-c -lhyle-source`).
 
-**Dependencies:** `external/libhyle` (schemas), `external/libbud` (HTML AST and
-bridge), `external/libhyle-source` (picker DTOs + option resolution),
-`external/libcorm`, and `json-c`.
+**Dependencies:** `libhyle` (schemas), `libbud` (HTML AST and bridge),
+`libhyle-source` (picker DTOs + option resolution), `libcorm`, and `json-c`.
 
 **WASM:** when a WASM module needs the bridge, include `hyle-bud-wasm.mk`
 (single ownership, L03) — it adds `filter.c`, `table.c`, `picker.c`, `form.c`,
@@ -165,16 +175,20 @@ Full signatures live in `include/hyle-bud/hyle-bud.h`.
 | Target | Where |
 |--------|-------|
 | Site entity UIs (filters, pickers, tables, routes) | site modules, native SSR + WASM |
-| Schema Picker front-end rule | `../../docs/PICKERS.md` |
+| Schema Picker front-end rule | [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) |
 | Picker option resolution backend | `../libhyle-source/` |
 | Picker presentation DTOs | `../libhyle-source/include/hyle-source/picker.h` |
 
 ## Documentation
 
-- `../../docs/ARCHITECTURE.md` — module graph and the single-boundary rule
-- `../../docs/PICKERS.md` — the universal picker / `hyle_bud_filter` contract
-- `../../docs/FILTERS.md` — query/filter semantics powering pickers and tables
-- `../../docs/C-ISOMORPHIC-BUD.md` — one renderer for SSR + WASM
+- [ARCHITECTURE.md](https://github.com/tty-pt/site/blob/main/docs/ARCHITECTURE.md)
+  — module graph and the single-boundary rule
+- [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) — the
+  universal picker / `hyle_bud_filter` contract
+- [FILTERS.md](https://github.com/tty-pt/site/blob/main/docs/FILTERS.md) —
+  query/filter semantics powering pickers and tables
+- [C-ISOMORPHIC-BUD.md](https://github.com/tty-pt/site/blob/main/docs/C-ISOMORPHIC-BUD.md)
+  — one renderer for SSR + WASM
 
 ## Testing
 
@@ -186,4 +200,4 @@ lane is rebuilt and exercised as part of the site's WASM builds.
 
 ## License
 
-BSD 2-Clause License. Copyright (c) 2026, tty-pt. See `../../LICENSE`.
+BSD 2-Clause License. Copyright (c) 2026, tty-pt. See `LICENSE`.

@@ -2,3 +2,4 @@
 *.d
 /lib
 objects-set.mk
+/man

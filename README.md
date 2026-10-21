@@ -15,6 +15,7 @@ via the WASM bridge, in the browser.
 ## Contents
 
 - [Features](#features)
+- [Component Architecture & No-JS Fallback](#component-architecture--no-js-fallback)
 - [Install](#install)
 - [Build from source](#build-from-source)
 - [Quickstart](#quickstart)
@@ -70,6 +71,30 @@ by default).
 `hyle_picker_buffer_t`) are *declared* in `<hyle-source/picker.h>`
 (libhyle-source); `hyle-bud.h` includes it and re-exports them as
 `hyle_bud_*` typedefs for compatibility.
+
+## Component Architecture & No-JS Fallback
+
+`libhyle-bud` bridges schema descriptors to cohesive DOM structures:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ Filter Bar (hyle_bud_filter_group)                                     │
+│ [ Search text... ]  [ Category: All ▼ ]  [ Status: Active ▼ ]  [Apply] │
+└────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│ Listing Table (hyle_bud_table)                                         │
+│ Title ▲                     Year      Status        Actions            │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Ain't Talkin' 'Bout Love    1978      Published     [Edit] [Delete]    │
+│ Jump                        1984      Published     [Edit] [Delete]    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Progressive Enhancement Contract
+- **No-JS Full Compatibility**: Every rich component degrades to standard HTML5 forms and anchors. When JavaScript or WASM is absent, filters submit plain GET forms, pagination uses URL query strings, and mutations submit standard POST bodies.
+- **WASM Interactive Layer**: When browser WASM executes, event listeners attach directly to existing server-rendered HTML elements, streaming fine-grained DOM patch operations without full page reloads.
+
+---
 
 ## Install
 

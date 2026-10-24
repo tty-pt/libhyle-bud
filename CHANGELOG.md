@@ -1,8 +1,14 @@
-## 1.0.1
+## [1.0.2]
+
+- **Ecosystem Synchronization**:
+  - Aligned with `libhyle` 1.5 token storage and `libbud` 1.0.2 namespaced WASM host imports.
+  - Hardened pure-C isomorphic field filters and table bindings.
+
+## [1.0.1]
 
 - **Ecosystem Synchronization**: Rebuilt and synchronized with Hyle 1.4.0, Hyle-Source 1.1.0, and Corm 2.0.0.
 
-## 1.0.0
+## [1.0.0]
 
 - **First stable release** — the schema-driven UI bridge that renders Bud HTML components directly from Hyle canonical data schemas (`hyle_schema_desc_t`). The **only** library in the stack permitted to link both `hyle` and `bud`; every filter, form, picker, and table on the platform is built through it — natively for SSR and, via the WASM bridge, in the browser.
 - **Schema-driven filters**: `hyle_bud_filter` draws the exact control from a field descriptor (text search, boolean switch, single-reference dropdown, multi-reference facet picker, omnisearch); `hyle_bud_filter_scoped` adds an integer scope for repeated rows/tables/cards, `hyle_bud_filter_group` builds a whole filter bar, `hyle_bud_filter_from_schema` renders one field with caller-supplied static options.

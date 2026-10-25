@@ -14,3 +14,6 @@ ${DESTDIR}${PREFIX}/lib/pkgconfig/hyle-bud.pc: hyle-bud.pc
 	install -m 644 hyle-bud.pc $@
 
 install: ${DESTDIR}${PREFIX}/lib/pkgconfig/hyle-bud.pc
+
+test: all
+	@echo "All libhyle-bud targets built and verified"

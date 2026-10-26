@@ -1,4 +1,4 @@
-## [1.0.2]
+## [1.1.0]
 
 - **Ecosystem Synchronization**:
   - Aligned with `libhyle` 1.5 token storage and `libbud` 1.0.2 namespaced WASM host imports.

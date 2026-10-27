@@ -4,79 +4,60 @@
 [![BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![Hyle × Bud bridge](https://img.shields.io/badge/bridge-hyle%E2%80%94bud-8B5CF6)](#)
 
-> Schema-driven Bud UI bridge for Hyle data.
+> Schema-driven UI bridge rendering Bud HTML components directly from Hyle canonical data schemas (`hyle_schema_desc_t`). Canonical header is `<hyle-bud/hyle-bud.h>`.
 
-A schema-driven UI bridge that renders Bud HTML components directly from Hyle
-canonical data schemas (`hyle_schema_desc_t`). It is the **only** library in the
-stack permitted to link both `hyle` and `bud`, and it is the layer every filter,
-form, picker, and table on the platform is built through — natively for SSR and,
-via the WASM bridge, in the browser.
+`libhyle-bud` is the designated junction between `libhyle` (data schemas) and `libbud` (declarative UI). It powers every filter, form, omni-picker, and sortable table across native SSR and browser WASM.
 
-## Contents
+---
 
-- [Features](#features)
-- [Component Architecture & No-JS Fallback](#component-architecture--no-js-fallback)
-- [Install](#install)
-- [Build from source](#build-from-source)
-- [Quickstart](#quickstart)
-- [API overview](#api-overview)
-- [Consumers](#consumers)
-- [Documentation](#documentation)
-- [Testing](#testing)
-- [License](#license)
+## 1. Quickstart
 
-## Features
+Render a complete HTML form directly from a C schema descriptor:
 
-**Schema-driven filters** — `hyle_bud_filter` inspects a field in the schema
-descriptor and draws the exact control: text search input, boolean switch,
-single-reference dropdown, multi-reference facet picker, or omnisearch
-omni-dropdown. `hyle_bud_filter_scoped` adds an integer scope for repeated rows,
-tables, or cards (`field_0`, `pick_q_field_0`, …); `hyle_bud_filter_group`
-builds a whole filter bar from a schema and a list of field names, and
-`hyle_bud_filter_from_schema` renders one field with caller-supplied static
-options.
+```c
+#include <hyle-bud/hyle-bud.h>
+#include <bud/bud.h>
+#include <stdio.h>
 
-**Declarative forms** — `hyle_bud_form` builds a complete HTML POST form from a
-schema descriptor: labels, typed inputs, HTML validation attributes, an optional
-hidden CSRF token, and submit/cancel buttons. Pass a C record for prefilled
-values or `NULL` for an empty form.
+typedef struct {
+    char title[256];
+    int year;
+} album_t;
 
-**Omni-dropdown pickers** — `hyle_bud_picker_field` and `hyle_bud_action_picker`
-wrap the universal picker (trigger + panel + No-JS sibling GET form). Fragment
-routes reuse `hyle_bud_picker_slots` (panel reset + summary) and
-`hyle_bud_picker_rows` (infinite-scroll option chunks); `hyle_bud_pick_find_active_scope`
-and the `hyle_bud_picker_view_collect_*` helpers discover active pickers from the
-current query string and schema. All behavior degrades to plain HTML forms with
-JavaScript off.
+static const hyle_schema_desc_t album_fields[] = {
+    FIELD_TEXT(title, album_t),
+    FIELD_INT(year, album_t),
+    FIELD_END
+};
 
-**Tables & row actions** — `hyle_bud_table`, `_header`, `_body`, and
-`hyle_bud_table_actions` render sortable listing tables with uniform row
-activation; `hyle_bud_pagination` renders paging controls. Row actions use a
-stretched overlay (`LINK` opens `/module/{id}`, `SUBMIT` posts a hidden field to
-a `form_id` via the HTML5 `form=` attribute — no-JS friendly inside another
-form).
+int main(void) {
+    // Generate full POST form from schema descriptor
+    bud_node *form = hyle_bud_form(
+        album_fields, NULL, "/album/save", "/", "Save",
+        NULL, NULL, NULL
+    );
 
-**WASM state hydration** — `hyle_bud_state_apply` / `hyle_bud_state_apply_len`
-unpack server-rendered `bud-state` JSON into C state structs using zero-copy
-stride layouts, and `hyle_bud_state_overlay_from_desc` / `hyle_bud_state_overlay_array`
-serialize C structs back to JSON for hydration. `hyle_bud_picker_state_from_json`
-/ `_to_json` carry picker state across the wire.
+    char *html = bud_render_html(form);
+    printf("%s\n", html);
 
-**i18n** — `hyle_bud_set_translator` installs a `const char *(*)(const char *)`
-callback; `hyle_bud_tr` routes every UI label through it (identity translation
-by default).
-
-**Picker DTOs** — the picker presentation types (`hyle_option_t`,
-`hyle_picker_desc_t`, `hyle_picker_entry_t`, `hyle_picker_view_t`,
-`hyle_picker_buffer_t`) are *declared* in `<hyle-source/picker.h>`
-(libhyle-source); `hyle-bud.h` includes it and re-exports them as
-`hyle_bud_*` typedefs for compatibility.
-
-## Component Architecture & No-JS Fallback
-
-`libhyle-bud` bridges schema descriptors to cohesive DOM structures:
-
+    bud_free_string(html);
+    bud_free(form);
+    return 0;
+}
 ```
+
+Compile and link:
+```sh
+cc form_demo.c $(pkg-config --cflags --libs hyle-bud) -o form_demo
+```
+
+---
+
+## 2. Component Architecture & Progressive Enhancement
+
+`libhyle-bud` renders rich UI controls that degrade gracefully to standard HTML5:
+
+```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │ Filter Bar (hyle_bud_filter_group)                                     │
 │ [ Search text... ]  [ Category: All ▼ ]  [ Status: Active ▼ ]  [Apply] │
@@ -90,138 +71,36 @@ by default).
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Progressive Enhancement Contract
-- **No-JS Full Compatibility**: Every rich component degrades to standard HTML5 forms and anchors. When JavaScript or WASM is absent, filters submit plain GET forms, pagination uses URL query strings, and mutations submit standard POST bodies.
+- **No-JS Full Compatibility**: Filters submit plain GET forms, pagination uses URL query strings, and mutations submit standard POST bodies.
 - **WASM Interactive Layer**: When browser WASM executes, event listeners attach directly to existing server-rendered HTML elements, streaming fine-grained DOM patch operations without full page reloads.
 
 ---
 
-## Install
+## 3. Core API Reference
 
-Prebuilt packages are distributed on tty.pt for Linux (APT / Alpine / Arch /
-Fedora-RHEL), macOS (Homebrew), Windows (winget / MSYS2), and OpenBSD.
-Follow the [installation instructions](
-https://github.com/tty-pt/ci/blob/main/docs/install.md) and use
-**libhyle-bud** as the package name.
+| Component | Key Functions | Description |
+| :--- | :--- | :--- |
+| **Forms & Inputs** | `hyle_bud_form`, `hyle_bud_text_input`, `hyle_bud_multiselect_field` | Generate complete POST forms and typed inputs from schema descriptors |
+| **Filters & Groups** | `hyle_bud_filter`, `hyle_bud_filter_group`, `hyle_bud_filter_scoped` | Render schema-driven search inputs, dropdowns, and multi-filter bars |
+| **Listing Tables** | `hyle_bud_table`, `hyle_bud_table_header`, `hyle_bud_table_actions`, `hyle_bud_pagination` | Sortable tables with uniform row activation, link/submit actions, and paging |
+| **Omni-Pickers** | `hyle_bud_picker_field`, `hyle_bud_action_picker`, `hyle_bud_picker_slots` | Faceted search dropdowns with infinite-scroll option chunking |
+| **State Hydration** | `hyle_bud_state_apply`, `hyle_bud_state_overlay_from_desc` | Unpack `bud-state` JSON into C memory with zero-copy stride layouts |
 
-## Build from source
+👉 *For detailed picker conventions, see [docs/PICKERS.md](../../docs/PICKERS.md).*
 
-The library builds with a plain `make` (the shared [`mk` include.mk](
-https://github.com/tty-pt/mk)):
+---
 
+## 4. Installation & Build
+
+### Prebuilt Packages
+Prebuilt packages are distributed on tty.pt for Linux (APT / Alpine / Arch / Fedora-RHEL), macOS (Homebrew), Windows (winget / MSYS2), and OpenBSD. Follow the [installation instructions](https://github.com/tty-pt/ci/blob/main/docs/install.md) and use **libhyle-bud** as the package name.
+
+### Build from Source
 ```sh
-make          # lib/libhyle-bud.so
-make test     # exercised end-to-end by the site suite (see Testing)
-sudo make install   # lib, headers, and hyle-bud.pc → $(PREFIX), default /usr/local
+make                  # builds lib/libhyle-bud.so
+make test             # run verification tests
+sudo make install     # install headers and library to system
 ```
-
-Link it from your own C code:
-
-```sh
-cc my_app.c $(pkg-config --cflags --libs hyle-bud)
-```
-
-`hyle-bud.pc` carries the full dependency chain
-(`-lhyle-bud -lhyle -lbud -lcorm -ljson-c -lhyle-source`).
-
-**Dependencies:** `libhyle` (schemas), `libbud` (HTML AST and bridge),
-`libhyle-source` (picker DTOs + option resolution), `libcorm`, and `json-c`.
-
-**WASM:** when a WASM module needs the bridge, include `hyle-bud-wasm.mk`
-(single ownership, L03) — it adds `filter.c`, `table.c`, `picker.c`, `form.c`,
-and `libhyle/src/url.c` to the module's sources together with the three include
-paths.
-
-> **Note:** libhyle-bud is framework-bound by definition — it is the deliberate
-> junction of Hyle (data) and Bud (UI). Everything UI-neutral lives downstream
-> in `libhyle` / `libhyle-source`; nothing UI belongs upstream.
-
-## Quickstart
-
-```c
-#include <hyle-bud/hyle-bud.h>
-#include <bud/bud.h>
-#include <stdio.h>
-
-typedef struct {
-	char title[256];
-	int year;
-} album_t;
-
-static const hyle_schema_desc_t album_fields[] = {
-	FIELD_TEXT(title, album_t),
-	FIELD_INT(year, album_t),
-	FIELD_END
-};
-
-int main(void)
-{
-	/* A full POST form from the schema; record/picker/CSRF may be NULL. */
-	bud_node *form = hyle_bud_form(
-	        album_fields, NULL, "/album/save", "/", "Save",
-	        NULL, NULL, NULL);
-
-	char *html = bud_render_html(form);
-	printf("%s\n", html);
-	bud_free_string(html);
-	return 0;
-}
-```
-
-## API overview
-
-Full signatures live in `include/hyle-bud/hyle-bud.h`.
-
-**State & hydration** — `hyle_bud_state_apply` / `hyle_bud_state_apply_len`,
-`hyle_bud_state_overlay_from_desc`, `hyle_bud_state_overlay_array`,
-`hyle_bud_picker_state_from_json`, `hyle_bud_picker_state_to_json`.
-
-**Forms & widgets** — `hyle_bud_form`, `hyle_bud_text_input`,
-`hyle_bud_filter_field`, `hyle_bud_multiselect_field`,
-`hyle_bud_reference_select_dropdown`, `hyle_bud_ms_reset`.
-
-**Filters** — `hyle_bud_filter`, `hyle_bud_filter_from_schema`,
-`hyle_bud_filter_scoped`, `hyle_bud_filter_group`.
-
-**Pickers** — `hyle_bud_picker_field`, `hyle_bud_action_picker`
-(`hyle_bud_action_picker_spec_t`), `hyle_bud_picker_slots`,
-`hyle_bud_picker_rows`, `hyle_bud_pick_find_active_scope`,
-`hyle_bud_picker_view_collect_schema`, `_collect_scoped`,
-`_collect_auto_fields_schema`.
-
-**Tables** — `hyle_bud_table`, `hyle_bud_table_header`, `hyle_bud_table_body`,
-`hyle_bud_table_actions` (`hyle_bud_row_action_t`, `hyle_row_action_kind_t`),
-`hyle_bud_pagination`.
-
-**i18n** — `hyle_bud_set_translator`, `hyle_bud_tr`.
-
-## Consumers
-
-| Target | Where |
-|--------|-------|
-| Site entity UIs (filters, pickers, tables, routes) | site modules, native SSR + WASM |
-| Schema Picker front-end rule | [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) |
-| Picker option resolution backend | `../libhyle-source/` |
-| Picker presentation DTOs | `../libhyle-source/include/hyle-source/picker.h` |
-
-## Documentation
-
-- [ARCHITECTURE.md](https://github.com/tty-pt/site/blob/main/docs/ARCHITECTURE.md)
-  — module graph and the single-boundary rule
-- [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) — the
-  universal picker / `hyle_bud_filter` contract
-- [FILTERS.md](https://github.com/tty-pt/site/blob/main/docs/FILTERS.md) —
-  query/filter semantics powering pickers and tables
-- [C-ISOMORPHIC-BUD.md](https://github.com/tty-pt/site/blob/main/docs/C-ISOMORPHIC-BUD.md)
-  — one renderer for SSR + WASM
-
-## Testing
-
-libhyle-bud ships no standalone test binary; it is exercised end-to-end by the
-site suite: `make test` at the repository root covers the SSR and E2E paths that
-drive filters, forms, and pickers, and `make boundary-check` enforces the
-single-link rule (only libhyle-bud may link both `hyle` and `bud`). The WASM
-lane is rebuilt and exercised as part of the site's WASM builds.
 
 ## License
 

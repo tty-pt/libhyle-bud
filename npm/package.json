@@ -1,0 +1,30 @@
+{
+  "name": "@ttypt/hyle-bud",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Universal Node.js and Browser bindings for libhyle-bud Schema-to-Bud UI Bridge",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "include",
+    "*.pc",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node -e 'console.log(\"@ttypt/hyle-bud built\")'",
+    "test": "node --test tests/hyle-bud.test.mjs"
+  },
+  "keywords": [
+    "hyle-bud",
+    "libhyle-bud",
+    "bud",
+    "hyle",
+    "schema",
+    "bridge",
+    "table"
+  ],
+  "author": "Paulo Quirino",
+  "license": "BSD-2-Clause"
+}

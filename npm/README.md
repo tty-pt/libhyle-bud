@@ -1,4 +1,4 @@
-# @ttypt/hyle-bud
+# @tty-pt/hyle-bud
 
 [![npm version](https://img.shields.io/badge/npm-v0.1.0-CB3837?logo=npm)](#)
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
@@ -12,11 +12,11 @@
 ## 1. Quickstart
 
 ```bash
-npm install @ttypt/hyle-bud
+npm install @tty-pt/hyle-bud
 ```
 
 ```typescript
-import { bindSchemaTable } from "@ttypt/hyle-bud";
+import { bindSchemaTable } from "@tty-pt/hyle-bud";
 
 const schema = [
   { key: "title", label: "Song Title" },
@@ -29,10 +29,23 @@ console.log(binding.headers);
 
 ---
 
-## 2. C Development Headers via NPM
+## 2. JavaScript / TypeScript API Reference
+
+### `bindSchemaTable(schemaFields: FieldDescriptor[], rows: Record<string, any>[]): TableBinding`
+Binds canonical Hyle schema definitions (`hyle_schema_desc_t`) into tabular presentation data suitable for Bud table rendering.
+* `schemaFields`: Array of schema field definitions with `key`/`name` and `label`.
+* `rows`: Raw array of record objects.
+* Returns `{ headers: Array<{ key: string, label: string }>, rows: Array<Record<string, string>> }`.
+
+### `version(): string`
+Returns the library semantic version string.
+
+---
+
+## 3. C Development Headers via NPM
 
 ```makefile
-CFLAGS += -I./node_modules/@ttypt/hyle-bud/include
+CFLAGS += -I./node_modules/@tty-pt/hyle-bud/include
 LDLIBS += -lhyle-bud
 ```
 

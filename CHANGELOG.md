@@ -1,7 +1,9 @@
-## [1.1.0]
+## [1.1.1] - 2026-11-03
 
-- **Ecosystem Synchronization**:
-  - Aligned with `libhyle` 1.5 token storage and `libbud` 1.0.2 namespaced WASM host imports.
+- **Standalone `@tty-pt/hyle-bud` Package & Ecosystem Synchronization**:
+  - Published `@tty-pt/hyle-bud` providing schema table and form binding helpers for modern Node.js and Web applications.
+  - Linked against decoupled `@tty-pt/bud` and `@tty-pt/hyle`.
+  - Aligned with `libhyle` token storage and `libbud` namespaced WASM host imports.
   - Hardened pure-C isomorphic field filters and table bindings.
 
 ## [1.0.1]

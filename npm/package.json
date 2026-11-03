@@ -1,6 +1,6 @@
 {
-  "name": "@ttypt/hyle-bud",
-  "version": "0.1.0",
+  "name": "@tty-pt/hyle-bud",
+  "version": "1.1.1",
   "type": "module",
   "description": "Universal Node.js and Browser bindings for libhyle-bud Schema-to-Bud UI Bridge",
   "main": "dist/index.js",
@@ -13,8 +13,15 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node -e 'console.log(\"@ttypt/hyle-bud built\")'",
+    "build": "node -e 'console.log(\"@tty-pt/hyle-bud built\")'",
     "test": "node --test tests/hyle-bud.test.mjs"
+  },
+  "peerDependencies": {
+    "@tty-pt/bud": ">=1.2.0",
+    "@tty-pt/hyle": ">=0.0.0"
+  },
+  "devDependencies": {
+    "@tty-pt/bud": "^1.2.2"
   },
   "keywords": [
     "hyle-bud",

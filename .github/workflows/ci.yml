@@ -11,7 +11,7 @@ jobs:
     with:
       name: libhyle-bud
       run_tests: true
-      deps: "libhyle,libbud,libcorm,libhyle-source"
+      deps: "libstele,libhyle,libbud,libcorm,libhyle-source"
       deps_openbsd: "libstele,libcorm,libhyle,libbud,libhyle-source,json-c"
       deps_deb: "libstele,libcorm,libhyle,libbud,libhyle-source,libjson-c-dev"
       deps_apk: "libstele,libcorm,libhyle,libbud,libhyle-source,json-c-dev"

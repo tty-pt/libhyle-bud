@@ -513,6 +513,25 @@ bud_node *hyle_bud_reference_select_dropdown(
 
 	container = bud_tpl("<div class='hyle-ss-options' data-hyle-ss-options='1'></div>");
 
+	char all_label[256];
+	snprintf(all_label, sizeof(all_label), "All %ss", label ? label : "");
+	int all_sel = (!current_value || !current_value[0]);
+	bud_node *all_radio = bud_tpl(
+		"<input type='radio' name='%s' value='' %b %bind/>",
+		key ? key : "",
+		all_sel ? "checked" : NULL,
+		"change", hyle_bud_ss_on_change
+	);
+	bud_node *all_row = bud_tpl(
+		"<label class='hyle-ss-option' data-label='%s'>"
+		"  %node %s"
+		"</label>",
+		all_label,
+		all_radio,
+		all_label
+	);
+	bud_append(container, all_row);
+
 	for (i = 0; i < noptions; i++) {
 		int sel =
 		        current_value &&

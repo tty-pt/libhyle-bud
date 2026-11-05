@@ -8,29 +8,80 @@ static void qs_without_sort(char *buf, size_t len, const char *qs)
 {
 	const char *p;
 	size_t written = 0;
+	int first = 1;
 
 	buf[0] = '\0';
-	if (!qs)
+	if (!qs || len == 0)
 		return;
+
+	if (*qs == '?')
+		qs++;
+
 	p = qs;
-	while (*p && written < len - 1) {
-		if (strncmp(p, "sort=", 5) == 0) {
-			const char *end = strchr(p, '&');
-			if (end)
-				p = end;
-			else
-				break;
-		} else if (*p == '&' && strncmp(p + 1, "sort=", 5) == 0) {
-			const char *end = strchr(p + 1, '&');
-			if (end)
-				p = end;
-			else
-				break;
-		} else {
-			buf[written++] = *p;
-			buf[written] = '\0';
-			p++;
+	while (*p) {
+		const char *amp = strchr(p, '&');
+		size_t seg_len = amp ? (size_t)(amp - p) : strlen(p);
+
+		if (seg_len > 0) {
+			int is_sort = (seg_len >= 5 && strncmp(p, "sort=", 5) == 0);
+			int is_page = (seg_len >= 5 && strncmp(p, "page=", 5) == 0);
+
+			if (!is_sort && !is_page) {
+				if (!first && written < len - 1)
+					buf[written++] = '&';
+				size_t to_copy = seg_len;
+				if (written + to_copy > len - 1)
+					to_copy = len - 1 - written;
+				memcpy(buf + written, p, to_copy);
+				written += to_copy;
+				buf[written] = '\0';
+				first = 0;
+			}
 		}
+
+		p += seg_len;
+		if (*p == '&')
+			p++;
+	}
+}
+
+static void qs_without_page(char *buf, size_t len, const char *qs)
+{
+	const char *p;
+	size_t written = 0;
+	int first = 1;
+
+	buf[0] = '\0';
+	if (!qs || len == 0)
+		return;
+
+	if (*qs == '?')
+		qs++;
+
+	p = qs;
+	while (*p) {
+		const char *amp = strchr(p, '&');
+		size_t seg_len = amp ? (size_t)(amp - p) : strlen(p);
+
+		if (seg_len > 0) {
+			int is_page = (seg_len >= 5 && strncmp(p, "page=", 5) == 0);
+
+			if (!is_page) {
+				if (!first && written < len - 1)
+					buf[written++] = '&';
+				size_t to_copy = seg_len;
+				if (written + to_copy > len - 1)
+					to_copy = len - 1 - written;
+				memcpy(buf + written, p, to_copy);
+				written += to_copy;
+				buf[written] = '\0';
+				first = 0;
+			}
+		}
+
+		p += seg_len;
+		if (*p == '&')
+			p++;
 	}
 }
 
@@ -76,8 +127,8 @@ bud_node *hyle_bud_table_header(
 		}
 
 		bud_node *th = bud_tpl(
-			"<th><a href='%s' class='hyle-sort-button'>%s</a></th>",
-			href, label
+			"<th><a href='%s' class='hyle-sort-button' data-action='1' data-action-payload='%s' data-action-url='%s' data-field='%s'>%s</a></th>",
+			href, col_keys[i], href, col_keys[i], label
 		);
 		if (th)
 			bud_append(tr, th);
@@ -220,12 +271,13 @@ static bud_node *table_impl(
 		action);
 
 	return bud_tpl(
-		"<div class='hyle-table-wrap'>"
+		"<div class='hyle-table-wrap' data-hyle-slot='table' data-module='%s'>"
 		"  <table>"
 		"    %node"
 		"    %node"
 		"  </table>"
 		"</div>",
+		module ? module : "",
 		h,
 		b
 	);
@@ -276,8 +328,11 @@ bud_node *hyle_bud_pagination(
 		: 1;
 	char tmp_prev[64], tmp_next[64], tmp_text[64];
 	char row_count_text[64];
+	char without_page[1024];
+	char prev_url[2048];
+	char next_url[2048];
 
-	(void)qs;
+	qs_without_page(without_page, sizeof(without_page), qs);
 
 	snprintf(tmp_prev, sizeof(tmp_prev), "%d",
 		page > 1 ? page - 1 : 1);
@@ -287,9 +342,18 @@ bud_node *hyle_bud_pagination(
 	snprintf(row_count_text, sizeof(row_count_text),
 		"%d %s %d %s", row_count, hyle_bud_tr("of"), total, hyle_bud_tr("rows"));
 
+	if (without_page[0]) {
+		snprintf(prev_url, sizeof(prev_url), "?%s&page=%s", without_page, tmp_prev);
+		snprintf(next_url, sizeof(next_url), "?%s&page=%s", without_page, tmp_next);
+	} else {
+		snprintf(prev_url, sizeof(prev_url), "?page=%s", tmp_prev);
+		snprintf(next_url, sizeof(next_url), "?page=%s", tmp_next);
+	}
+
 	bud_node *sel = bud_element("select");
 	if (sel) {
 		bud_set_attr(sel, "name", "per_page");
+		bud_set_attr(sel, "aria-label", hyle_bud_tr("Rows per page"));
 		static const int per_page_opts[] = {5, 10, 20, 50, 100};
 		size_t k;
 		for (k = 0;
@@ -309,21 +373,21 @@ bud_node *hyle_bud_pagination(
 	}
 
 	return bud_tpl(
-		"<div class='hyle-table-footer'>"
+		"<div class='hyle-table-footer' data-hyle-slot='pagination'>"
 		"  <div class='hyle-pagination'>"
-		"    <button type='submit' name='page' value='%s' %b>%s</button>"
+		"    <button type='submit' name='page' value='%s' data-action='2' data-action-payload='%s' data-action-url='%s' %b>%s</button>"
 		"    <span class='text-sm'>%s</span>"
-		"    <button type='submit' name='page' value='%s' %b>%s</button>"
+		"    <button type='submit' name='page' value='%s' data-action='2' data-action-payload='%s' data-action-url='%s' %b>%s</button>"
 		"    %node"
 		"    <button type='submit'>%s</button>"
 		"  </div>"
 		"  <span class='hyle-row-count'>%s</span>"
 		"</div>",
-		tmp_prev,
+		tmp_prev, tmp_prev, prev_url,
 		page <= 1 ? "disabled" : NULL,
 		hyle_bud_tr("← Prev"),
 		tmp_text,
-		tmp_next,
+		tmp_next, tmp_next, next_url,
 		page >= last_page ? "disabled" : NULL,
 		hyle_bud_tr("Next →"),
 		sel,

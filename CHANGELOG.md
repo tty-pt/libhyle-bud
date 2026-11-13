@@ -1,3 +1,11 @@
+## [Unreleased] (target: v1.2.0)
+
+### Added
+- **Fragment Engine & In-Memory Cache (`htdocs/hyle-fragments.js`, `src/hyle-bud-cache.c`)**:
+  - Implemented fragment caching and client-side rendering in `hyle-fragments.js`.
+  - Added in-memory cache operations in `src/hyle-bud-cache.c` and exported APIs in `include/hyle-bud/hyle-bud.h`.
+  - Added form parsing, filter enhancements, and table row render optimizations.
+
 ## [1.1.1] - 2026-11-03
 
 - **Standalone `@tty-pt/hyle-bud` Package & Ecosystem Synchronization**:

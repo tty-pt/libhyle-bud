@@ -1,10 +1,19 @@
 {
   "name": "@tty-pt/hyle-bud",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "description": "Universal Node.js and Browser bindings for libhyle-bud Schema-to-Bud UI Bridge",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cap": {
+      "default": "./dist/hyle-cap.js"
+    }
+  },
   "files": [
     "dist",
     "include",

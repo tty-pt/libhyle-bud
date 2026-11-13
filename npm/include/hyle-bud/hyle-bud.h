@@ -173,6 +173,24 @@ bud_node *hyle_bud_form(
         const hyle_bud_picker_view_t *pv,
         const char *vstr_val);
 
+/**
+ * @brief Render a standalone input control with label and container.
+ */
+bud_node *hyle_bud_input(
+        const char *name,
+        const char *label,
+        const char *val,
+        const char *type,
+        const char *class_name);
+
+/**
+ * @brief Render a standalone input field derived from a Hyle schema field descriptor.
+ */
+bud_node *hyle_bud_field(
+        const hyle_schema_desc_t *field,
+        const char *val,
+        const char *class_name);
+
 /*
  * Schema-Driven Generic Filter Component (Entity Pattern)
  */
@@ -662,5 +680,47 @@ struct json_object *hyle_bud_state_overlay_array(
         const bud_field_desc_t *fields,
         int int_kind,
         int str_kind);
+
+/* ── Client-side in-memory cache for queries and table slices ─────────── */
+
+/**
+ * @brief Store a query result or table slice in the client-side cache.
+ * @param[in] dataset_id Dataset identifier (e.g. "song" or "song.items").
+ * @param[in] query_str  Query string or request key.
+ * @param[in] json       JSON state or response string to cache.
+ * @param[in] len        Length of @p json in bytes (or 0 to measure via strlen).
+ * @return 0 on success, negative on error.
+ */
+int hyle_bud_cache_put(
+        const char *dataset_id, const char *query_str, const char *json,
+        size_t len);
+
+/**
+ * @brief Retrieve a cached query result or table slice.
+ * @param[in]  dataset_id Dataset identifier.
+ * @param[in]  query_str  Query string or request key.
+ * @param[out] len_out    Optional pointer to receive length in bytes.
+ * @return Pointer to cached JSON string, or NULL if not in cache.
+ */
+const char *hyle_bud_cache_get(
+        const char *dataset_id, const char *query_str, size_t *len_out);
+
+/**
+ * @brief Invalidate all cache entries matching a dataset identifier.
+ * @param[in] dataset_id Dataset identifier (or NULL to invalidate all datasets).
+ */
+void hyle_bud_cache_invalidate(const char *dataset_id);
+
+/**
+ * @brief Clear all entries in the client-side cache.
+ */
+void hyle_bud_cache_clear(void);
+
+/**
+ * @brief Return the number of active cached entries for a dataset.
+ * @param[in] dataset_id Dataset identifier (or NULL for total across all datasets).
+ * @return Number of cached entries.
+ */
+size_t hyle_bud_cache_count(const char *dataset_id);
 
 #endif

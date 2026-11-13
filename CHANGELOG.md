@@ -1,4 +1,4 @@
-## [Unreleased] (target: v1.2.0)
+## [1.2.0] - 2026-11-13
 
 ### Added
 - **Fragment Engine & In-Memory Cache (`htdocs/hyle-fragments.js`, `src/hyle-bud-cache.c`)**:

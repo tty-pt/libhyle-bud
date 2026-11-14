@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@tty-pt/bud": "^1.3.0",
-    "@tty-pt/hyle": "^1.7.2"
+    "@tty-pt/hyle": "^1.7.3"
   },
   "keywords": [
     "hyle-bud",

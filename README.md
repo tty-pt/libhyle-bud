@@ -1,5 +1,6 @@
 # libhyle-bud
 
+[![npm](https://img.shields.io/badge/npm-@tty--pt/hyle--bud-CB3837?logo=npm)](npm/README.md)
 [![C99](https://img.shields.io/badge/C-C99-555?logo=c)](#)
 [![BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![Hyle × Bud bridge](https://img.shields.io/badge/bridge-hyle%E2%80%94bud-8B5CF6)](#)
@@ -101,6 +102,20 @@ make                  # builds lib/libhyle-bud.so
 make test             # run verification tests
 sudo make install     # install headers and library to system
 ```
+
+---
+
+## 5. JavaScript & WebAssembly Bindings (`@tty-pt/hyle-bud`)
+
+For browser, Node.js, and edge runtimes, `libhyle-bud` ships an isomorphic WebAssembly bridge on npm:
+
+```sh
+npm install @tty-pt/hyle-bud
+```
+
+See [npm/README.md](npm/README.md) for the full TypeScript and WebAssembly API reference.
+
+---
 
 ## License
 

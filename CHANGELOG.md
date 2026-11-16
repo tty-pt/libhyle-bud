@@ -1,3 +1,9 @@
+## [1.2.1] - 2026-11-16
+
+### Changed
+- **Windows (`winget` / MinGW-w64) Packaging (`Makefile`, `.github/workflows/ci.yml`)**:
+  - Added `LDLIBS-libhyle-bud-Windows := -lhyle-source -lstele` and configured `winget` in `publish_to` (`deb`, `apk`, `rpm`, `pacman`, `brew`, `openbsd`, `winget`).
+
 ## [1.2.0] - 2026-11-13
 
 ### Added

@@ -4,6 +4,7 @@ all := libhyle-bud
 LDLIBS-libhyle-bud := -lhyle -lbud -lcorm -ljson-c
 LDLIBS-libhyle-bud-Linux := -Wl,--no-as-needed -lhyle-source -Wl,--as-needed
 LDLIBS-libhyle-bud-Darwin := -lhyle-source
+LDLIBS-libhyle-bud-Windows := -lhyle-source -lstele
 
 libhyle-bud-obj-y := src/filter.o src/table.o src/picker.o src/form.o src/hyle-bud-cache.o
 

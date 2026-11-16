@@ -325,3 +325,75 @@ bud_node *hyle_bud_form(
 
 	return form;
 }
+
+bud_node *hyle_bud_input(
+        const char *name,
+        const char *label,
+        const char *val,
+        const char *type,
+        const char *class_name)
+{
+	if (!name || !name[0])
+		return NULL;
+
+	const char *t = (type && type[0]) ? type : "text";
+	const char *v = val ? val : "";
+	const char *c = class_name ? class_name : "hyle-input-group";
+
+	char label_text[128] = {0};
+	if (label && label[0]) {
+		snprintf(label_text, sizeof(label_text), "%s", label);
+	} else {
+		hyle_bud_field_label(name, label_text, sizeof(label_text));
+	}
+
+	if (strcmp(t, "textarea") == 0) {
+		bud_node *txt_val = hyle_bud_textarea_value(v);
+		return bud_tpl(
+			"<div class='%s'>"
+			"  <label for='%s'>%s</label>"
+			"  <textarea id='%s' name='%s'>%node</textarea>"
+			"</div>",
+			c, name, label_text, name, name, txt_val
+		);
+	}
+
+	if (strcmp(t, "checkbox") == 0) {
+		int is_checked = (v[0] == '1' || strcmp(v, "true") == 0 || strcmp(v, "on") == 0);
+		return bud_tpl(
+			"<div class='%s'>"
+			"  <input type='checkbox' id='%s' name='%s' %b/>"
+			"  <label for='%s'>%s</label>"
+			"</div>",
+			c, name, name, is_checked ? "checked" : NULL, name, label_text
+		);
+	}
+
+	return bud_tpl(
+		"<div class='%s'>"
+		"  <label for='%s'>%s</label>"
+		"  <input type='%s' id='%s' name='%s' value='%s'/>"
+		"</div>",
+		c, name, label_text, t, name, name, v
+	);
+}
+
+bud_node *hyle_bud_field(
+        const hyle_schema_desc_t *field,
+        const char *val,
+        const char *class_name)
+{
+	if (!field || !field->key || !field->key[0])
+		return NULL;
+
+	const char *type_str = "text";
+	if (field->file && (strstr(field->file, ".txt") || strstr(field->file, ".html"))) {
+		type_str = "textarea";
+	} else if (field->is_int) {
+		type_str = "number";
+	} else if (field->type == HYLE_FIELD_BOOL) {
+		type_str = "checkbox";
+	}
+
+	return hyle_bud_input(field->key, NULL, val, type_str, class_name);
+}

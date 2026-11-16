@@ -18,5 +18,7 @@ jobs:
       deps_rpm: "libstele,libcorm,libhyle,libbud,libhyle-source,json-c-devel"
       deps_pacman: "libstele,libcorm,libhyle,libbud,libhyle-source,json-c"
       deps_brew: "libstele,libcorm,libhyle,libbud,libhyle-source,json-c"
-      publish_to: "deb,apk,rpm,pacman,brew,openbsd"
+      deps_winget: "mingw-w64-x86_64-json-c,mingw-w64-x86_64-libiconv,mingw-w64-x86_64-pcre2,mingw-w64-x86_64-xxhash"
+      deps_winget_tty: "libstele,libcorm,liblemma,libhyle,libbud,libhyle-source"
+      publish_to: "deb,apk,rpm,pacman,brew,openbsd,winget"
     secrets: inherit

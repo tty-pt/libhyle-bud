@@ -18,6 +18,26 @@ export function bindSchemaTable(schemaFields, rows) {
   return { headers, rows: formattedRows };
 }
 
+export function formatInput(name, label, val = "", type = "text", className = "hyle-input-group") {
+  const lbl = label || name;
+  return {
+    name,
+    label: lbl,
+    value: String(val ?? ""),
+    type,
+    className
+  };
+}
+
+export function formatField(field, val = "", className = "hyle-input-group") {
+  const fName = field.name || field.key;
+  let type = "text";
+  if (field.type === "text" || field.file) type = "textarea";
+  else if (field.is_int || field.type === "int") type = "number";
+  else if (field.type === "bool") type = "checkbox";
+  return formatInput(fName, field.label, val, type, className);
+}
+
 export function version() {
   return "0.1.0";
 }

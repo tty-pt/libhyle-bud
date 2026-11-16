@@ -1,11 +1,11 @@
 # @tty-pt/hyle-bud
 
-[![npm version](https://img.shields.io/badge/npm-v0.1.0-CB3837?logo=npm)](#)
+[![npm version](https://img.shields.io/badge/npm-v1.2.0-CB3837?logo=npm)](#)
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![TypeScript Ready](https://img.shields.io/badge/TypeScript-Ready-3178C6?logo=typescript)](#)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-success)](#)
 
-> Universal Node.js and Browser bindings for **`libhyle-bud`**, the schema-to-bud row and filter binding interface.
+> Universal Node.js and Browser bindings for **`libhyle-bud`**, the schema-to-bud row, filter, fragment cache, and Web HAL capability bridge interface.
 
 ---
 
@@ -36,6 +36,9 @@ Binds canonical Hyle schema definitions (`hyle_schema_desc_t`) into tabular pres
 * `schemaFields`: Array of schema field definitions with `key`/`name` and `label`.
 * `rows`: Raw array of record objects.
 * Returns `{ headers: Array<{ key: string, label: string }>, rows: Array<Record<string, string>> }`.
+
+### Browser Fragment & Capability Modules (`dist/hyle-fragments.js`, `dist/hyle-cap.js`)
+Provides client-side fragment caching, optimistic table/filter rendering, and Web HAL `hyle.*` capability registration on `@tty-pt/stele`.
 
 ### `version(): string`
 Returns the library semantic version string.
